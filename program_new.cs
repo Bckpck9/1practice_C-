@@ -27,40 +27,40 @@ class FileItem
 
 class Program
 {
-    // Размер всего экрана
+    //Размер всего экрана
     const int ScreenWidth = 80;
     const int ScreenHeight = 25;
 
-    // Левая и правая панели
+    //Левая и правая панели
     const int LeftPanelWidth = 40;
     const int RightPanelWidth = 40;
 
-    // Координата начала правой панели
+    //Координата начала правой панели
     const int RightPanelX = LeftPanelWidth;
 
-    // Координаты панелей
-    const int PanelTop = 1;
-    const int PanelHeight = 21;
+    //Координаты панелей
+    const int PanelTop = 1;//"═" координата по y сверху
+    const int PanelHeight = 21;//"═" координата по y снизу
 
-    // Строки внутри панели
+    //Строки внутри панели
     const int HeaderRow = 2;
-    const int FilesTopRow = 4;
-    const int PanelBottomLine = 19;
-    const int PanelInfoRow = 20;
+    const int FilesTopRow = 4; //"-" внутри панели
+    const int PanelBottomLine = 19;//"-" внутри панели
+    const int PanelInfoRow = 20;//►КАТАЛОГ◄ снизу
 
-    // Колонки левой панели
-    const int LeftColumnWidth = 13;
-    const int LeftNameMaxLength = 11;
+    //Колонки левой панели
+    const int LeftColumnWidth = 13;//ширина одной колонки в левой панели
+    const int LeftNameMaxLength = 11;//max длина имени файла слева
 
-    // Колонки правой панели
-    const int RightNameMaxLength = 12;
-    const int SizeColumnX = 15;
-    const int DateColumnX = 24;
-    const int TimeColumnX = 33;
+    //Колонки правой панели
+    const int RightNameMaxLength = 12;//max длина имени файла справа
+    const int SizeColumnX = 15;//ширина колонки размера правой панели
+    const int DateColumnX = 24;//ширина колонки даты правой панели
+    const int TimeColumnX = 33;//ширина колонки времени правой панели
 
-    // Нижняя часть экрана
-    const int StatusRow = 22;
-    const int FunctionKeyRow = 23;
+    //Нижняя часть экрана
+    const int StatusRow = 22;//под снимим окном вывод C:\NC<
+    const int FunctionKeyRow = 23;//нижние доп кнопки под окном
 
     static void Main()
     {
@@ -153,12 +153,12 @@ class Program
 
     static void DrawAll(List<FileItem> files)
     {
-        Console.BackgroundColor = ConsoleColor.Blue;
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.BackgroundColor = ConsoleColor.Blue;//цвет фона
+        Console.ForegroundColor = ConsoleColor.White;//цвет текста
 
         for (int y = 0; y < ScreenHeight; y++)//заливка экрана синим
         {
-            Write(0, y, new string(' ', ScreenWidth));
+            Write(0, y, new string(' ', ScreenWidth));//ScreenWidth контсанта =80
         }
 
         DrawTopMenu();
@@ -170,8 +170,8 @@ class Program
 
     static void DrawTopMenu()
     {
-        Console.BackgroundColor = ConsoleColor.Blue;
-        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.BackgroundColor = ConsoleColor.Blue;//фон
+        Console.ForegroundColor = ConsoleColor.White;//текст
 
         Write(1, 0, "Левая");
         Write(10, 0, "Файл");
@@ -179,7 +179,6 @@ class Program
         Write(26, 0, "Команды");
         Write(38, 0, "Правая");
 
-        Console.BackgroundColor = ConsoleColor.Cyan;
         Console.ForegroundColor = ConsoleColor.Black;
 
 
@@ -192,7 +191,7 @@ class Program
     static void DrawLeftPanel(List<FileItem> files)
     {
         int x = 0;
-
+        //(0, 1, 40, 21)
         DrawBox(x, PanelTop, LeftPanelWidth, PanelHeight);
 
         Write(x + 16, PanelTop, "C:\\NC");
@@ -206,60 +205,59 @@ class Program
 
         Write(
             x + 1,
-            FilesTopRow - 1,
-            new string('─', LeftPanelWidth - 2)
+            FilesTopRow - 1,//FilesTopRow=40
+            new string('\u2500', LeftPanelWidth - 2)
         );
 
+        //(4, 19)
         for (int y = FilesTopRow; y < PanelBottomLine; y++)
         {
-            Write(x + 13, y, "│");
-            Write(x + 26, y, "│");
+            Write(x + 13, y, "\u2502");
+            Write(x + 26, y, "\u2502");
         }
 
         List<FileItem> sorted = files
-            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)//игнорирует регистр StringComparer.OrdinalIgnoreCase
+            .ToList();//результат сортировки превращаем обратно в List<FileItem>
 
-        int rowsPerColumn = PanelBottomLine - FilesTopRow;
+        int rowsPerColumn = PanelBottomLine - FilesTopRow;//19-4
 
-        for (int i = 0;
-             i < sorted.Count && i < rowsPerColumn * 3;
-             i++)
+        for (int i = 0; i < sorted.Count && i < rowsPerColumn * 3; i++)//*3 т.к три колонки в каждой 15 строк
         {
             int column = i / rowsPerColumn;
-            int row = i % rowsPerColumn;
+            int row = i % rowsPerColumn;//без отсттка деления выходит ровно 3 колонки 
 
-            int positionX = x + 1 + column * 13;
-            int positionY = FilesTopRow + row;
+            int positionX = x + 1 + column * 13;//вычиялем X файла
+            int positionY = FilesTopRow + row;//вычиялем Y файла
 
-            string name = Shorten(
+            string name = Shorten(//обрезание длины файла до max 11 символов
                 sorted[i].Name,
-                LeftNameMaxLength
+                LeftNameMaxLength//константа = 11
             );
 
-            if (sorted[i].IsDirectory)
+            if (sorted[i].IsDirectory)//проверка каталог или файл
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Cyan;
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
-            Write(positionX, positionY, name.PadRight(LeftNameMaxLength));
+            Write(positionX, positionY, name.PadRight(LeftNameMaxLength));//выводим имя
         }
 
-        Write(
+        Write(//нижняя вертикальная линия
             x + 1,
             PanelBottomLine,
-            new string('─', LeftPanelWidth - 2)
+            new string('\u2500', LeftPanelWidth - 2)
         );
 
         Console.ForegroundColor = ConsoleColor.White;
 
         string catalog = "►КАТАЛОГ◄ 11.10.02 19:48";
 
-        int catalogX =
+        int catalogX =//для центирования 
             x + (LeftPanelWidth - catalog.Length) / 2;
 
         Write(catalogX, PanelInfoRow, catalog);
@@ -284,14 +282,14 @@ class Program
         Write(
             x + 1,
             FilesTopRow - 1,
-            new string('─', RightPanelWidth - 2)
+            new string('\u2500', RightPanelWidth - 2)
         );
 
         for (int y = FilesTopRow; y < PanelBottomLine; y++)
         {
-            Write(x + 14, y, "│");
-            Write(x + 23, y, "│");
-            Write(x + 32, y, "│");
+            Write(x + 14, y, "\u2502");
+            Write(x + 23, y, "\u2502");
+            Write(x + 32, y, "\u2502");
         }
 
         List<FileItem> sorted = files
@@ -300,11 +298,11 @@ class Program
 
         int rowsPerPanel = PanelBottomLine - FilesTopRow;
 
-        for (int i = 0; i < sorted.Count && i < rowsPerPanel; i++)
+        for (int i = 0; i < sorted.Count && i < rowsPerPanel; i++)//цикл для вывода файла
         {
             FileItem file = sorted[i];
 
-            int positionY = FilesTopRow + i;
+            int positionY = FilesTopRow + i;//вычиялем строку вывода файла
 
             if (file.IsDirectory)
             {
@@ -315,46 +313,46 @@ class Program
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
-            Write(
+            Write(//вывод файла
                 x + 1,
                 positionY,
                 Shorten(file.Name, RightNameMaxLength)
-                    .PadRight(RightNameMaxLength)
+                    .PadRight(RightNameMaxLength)//определяем макс длину файла
             );
 
-            Write(
+            Write(//вывод размера файла
                 x + SizeColumnX,
                 positionY,
                 file.Size.PadLeft(7)
             );
 
-            Write(
+            Write(//вывод даты 
                 x + DateColumnX,
                 positionY,
                 file.Date
             );
 
-            Write(
+            Write(//вывод времени
                 x + TimeColumnX,
                 positionY,
                 file.Time.PadLeft(5)
             );
         }
 
-        Write(
+        Write(//нижняя горизонтальная линия
             x + 1,
             PanelBottomLine,
-            new string('─', RightPanelWidth - 2)
+            new string('\u2500', RightPanelWidth - 2)
         );
 
         Console.ForegroundColor = ConsoleColor.White;
 
         string catalog = "►КАТАЛОГ◄ 11.10.02 19:48";
 
-        int catalogX =
+        int catalogX =//вычиляем позицию строки 
             x + (RightPanelWidth - catalog.Length) / 2;
 
-        Write(catalogX, PanelInfoRow, catalog);
+        Write(catalogX, PanelInfoRow, catalog);//вывод строки каталог
     }
 
     static void DrawBox(int x, int y, int width, int height)
@@ -362,19 +360,19 @@ class Program
         Write(
             x,
             y,
-            "╔" + new string('═', width - 2) + "╗"
+            "\u2554" + new string('\u2550', width - 2) + "\u2557"
         );
 
         for (int i = 1; i < height - 1; i++)
         {
-            Write(x, y + i, "║");
-            Write(x + width - 1, y + i, "║");
+            Write(x, y + i, "\u2551");
+            Write(x + width - 1, y + i, "\u2551");
         }
 
         Write(
             x,
             y + height - 1,
-            "╚" + new string('═', width - 2) + "╝"
+            "\u255A" + new string('\u2550', width - 2) + "\u255D"
         );
     }
 
@@ -424,8 +422,8 @@ class Program
                 numberLength = 1;
             }
 
-            string number = key.Substring(0, numberLength);
-            string command = key.Substring(numberLength);
+            string number = key.Substring(0, numberLength);//с 0 индекса берем numberLength
+            string command = key.Substring(numberLength);//с позиции numberLength берем все до конца
 
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
@@ -441,7 +439,7 @@ class Program
                 command
             );
 
-            x += key.Length + 1;
+            x += key.Length + 1;//один пробел между кнопками 
         }
 
         Console.BackgroundColor = ConsoleColor.Black;
@@ -450,26 +448,26 @@ class Program
 
     static string Shorten(string name, int maxLength)
     {
-        if (name.Length <= maxLength)
+        if (name.Length <= maxLength)//если меньше чем MaxLength=11
         {
             return name;
         }
 
-        int dot = name.LastIndexOf('.');
+        int dot = name.LastIndexOf('.');//ищем позицию точки в имени 
 
-        if (dot > 0 && dot < name.Length - 1)
+        if (dot > 0 && dot < name.Length - 1)//>0 и после точки хотя бы 1 символ
         {
-            string extension = name.Substring(dot);
+            string extension = name.Substring(dot);//берем строку с позиции dot и до конца
 
             int available =
-                maxLength - extension.Length - 1;
+                maxLength - extension.Length - 1;//считаем сколько места осталось
 
-            if (available < 1)
+            if (available < 1)//осталось ли место для основной части имени
             {
-                return name.Substring(0, maxLength - 1) + "~";
+                return name.Substring(0, maxLength - 1) + "~";//в начало имени ставим ~
             }
 
-            return name.Substring(0, available)
+            return name.Substring(0, available)//если расширение нормально и место есть
                    + "-"
                    + extension;
         }
@@ -479,23 +477,23 @@ class Program
 
     static void Write(int x, int y, string text)
     {
-        if (y < 0 || y >= ScreenHeight || x >= ScreenWidth)
+        if (y < 0 || y >= ScreenHeight || x >= ScreenWidth)//проверка на корректность координат
         {
             return;
         }
 
-        if (x < 0)
+        if (x < 0)//прорверка корректности координаты x
         {
-            text = text.Substring(-x);
+            text = text.Substring(-x);//отбрасываются символы если левее экрана
             x = 0;
         }
 
-        if (x + text.Length > ScreenWidth)
+        if (x + text.Length > ScreenWidth)//проверка правой границы
         {
-            text = text.Substring(0, ScreenWidth - x);
+            text = text.Substring(0, ScreenWidth - x);//также отбрастываются символы если правее экрана
         }
 
-        Console.SetCursorPosition(x, y);
+        Console.SetCursorPosition(x, y);//перемещаем курсор по координатам
         Console.Write(text);
     }
 }

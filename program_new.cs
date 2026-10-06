@@ -27,15 +27,12 @@ class FileItem
 
 class Program
 {
-    //Размер всего экрана
     const int ScreenWidth = 80;
     const int ScreenHeight = 25;
-
-    //Левая и правая панели
+    
     const int LeftPanelWidth = 40;
     const int RightPanelWidth = 40;
-
-    //Координата начала правой панели
+    
     const int RightPanelX = LeftPanelWidth;
 
     //Координаты панелей
@@ -48,17 +45,14 @@ class Program
     const int PanelBottomLine = 19;//"-" внутри панели
     const int PanelInfoRow = 20;//►КАТАЛОГ◄ снизу
 
-    //Колонки левой панели
     const int LeftColumnWidth = 13;//ширина одной колонки в левой панели
     const int LeftNameMaxLength = 11;//max длина имени файла слева
 
-    //Колонки правой панели
     const int RightNameMaxLength = 12;//max длина имени файла справа
     const int SizeColumnX = 15;//ширина колонки размера правой панели
     const int DateColumnX = 24;//ширина колонки даты правой панели
     const int TimeColumnX = 33;//ширина колонки времени правой панели
 
-    //Нижняя часть экрана
     const int StatusRow = 22;//под снимим окном вывод C:\NC<
     const int FunctionKeyRow = 23;//нижние доп кнопки под окном
 
@@ -170,8 +164,8 @@ class Program
 
     static void DrawTopMenu()
     {
-        Console.BackgroundColor = ConsoleColor.Blue;//фон
-        Console.ForegroundColor = ConsoleColor.White;//текст
+        Console.BackgroundColor = ConsoleColor.Blue;
+        Console.ForegroundColor = ConsoleColor.White;
 
         Write(1, 0, "Левая");
         Write(10, 0, "Файл");
@@ -203,21 +197,21 @@ class Program
         Write(x + 16, HeaderRow, "Имя");
         Write(x + 29, HeaderRow, "Имя");
 
-        Write(
+        Write(//- горизонтальная одинарная
             x + 1,
             FilesTopRow - 1,//FilesTopRow=40
             new string('\u2500', LeftPanelWidth - 2)
         );
 
         //(4, 19)
-        for (int y = FilesTopRow; y < PanelBottomLine; y++)
+        for (int y = FilesTopRow; y < PanelBottomLine; y++)// - вертикальаная раздел колонки
         {
             Write(x + 13, y, "\u2502");
             Write(x + 26, y, "\u2502");
         }
 
         List<FileItem> sorted = files
-            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)//игнорирует регистр StringComparer.OrdinalIgnoreCase
+            .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase)//игнорируеv регистр 
             .ToList();//результат сортировки превращаем обратно в List<FileItem>
 
         int rowsPerColumn = PanelBottomLine - FilesTopRow;//19-4
@@ -225,7 +219,7 @@ class Program
         for (int i = 0; i < sorted.Count && i < rowsPerColumn * 3; i++)//*3 т.к три колонки в каждой 15 строк
         {
             int column = i / rowsPerColumn;
-            int row = i % rowsPerColumn;//без отсттка деления выходит ровно 3 колонки 
+            int row = i % rowsPerColumn;//без оcтсттка деления выходит ровно 3 колонки 
 
             int positionX = x + 1 + column * 13;//вычиялем X файла
             int positionY = FilesTopRow + row;//вычиялем Y файла
@@ -247,7 +241,7 @@ class Program
             Write(positionX, positionY, name.PadRight(LeftNameMaxLength));//выводим имя
         }
 
-        Write(//нижняя вертикальная линия
+        Write(//нижняя вертикальная линия над каталог
             x + 1,
             PanelBottomLine,
             new string('\u2500', LeftPanelWidth - 2)
@@ -279,7 +273,7 @@ class Program
         Write(x + DateColumnX, HeaderRow, "Дата");
         Write(x + TimeColumnX, HeaderRow, "Время");
 
-        Write(
+        Write(//одинарная горизонтальная
             x + 1,
             FilesTopRow - 1,
             new string('\u2500', RightPanelWidth - 2)
@@ -287,7 +281,7 @@ class Program
 
         for (int y = FilesTopRow; y < PanelBottomLine; y++)
         {
-            Write(x + 14, y, "\u2502");
+            Write(x + 14, y, "\u2502");//одинарная вертикальная
             Write(x + 23, y, "\u2502");
             Write(x + 32, y, "\u2502");
         }
@@ -355,24 +349,24 @@ class Program
         Write(catalogX, PanelInfoRow, catalog);//вывод строки каталог
     }
 
-    static void DrawBox(int x, int y, int width, int height)
+    static void DrawBox(int x, int y, int width, int height)// '=' двойная рамка
     {
         Write(
             x,
             y,
-            "\u2554" + new string('\u2550', width - 2) + "\u2557"
+            "\u2554" + new string('\u2550', width - 2) + "\u2557"//левый угол + горизонт + правый угол
         );
 
         for (int i = 1; i < height - 1; i++)
         {
-            Write(x, y + i, "\u2551");
+            Write(x, y + i, "\u2551");//вертикальная
             Write(x + width - 1, y + i, "\u2551");
         }
 
         Write(
             x,
             y + height - 1,
-            "\u255A" + new string('\u2550', width - 2) + "\u255D"
+            "\u255A" + new string('\u2550', width - 2) + "\u255D"//левый угол + правый угол
         );
     }
 
@@ -413,7 +407,7 @@ class Program
         {
             int numberLength;
 
-            if (key.StartsWith("10"))
+            if (key.StartsWith("10"))//двузрначное число или нет
             {
                 numberLength = 2;
             }
